@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
 
+const API_URL = process.env.REACT_APP_API_URL || "";
+
 interface User {
   id: string;
   username: string;
@@ -40,7 +42,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       try {
         const token = localStorage.getItem("token");
         if (token) {
-          const response = await axios.get("/api/auth/me", {
+          const response = await axios.get(`${API_URL}/api/auth/me`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },
@@ -59,7 +61,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   const login = async (email: string, password: string) => {
-    const response = await axios.post("/api/auth/login", { email, password });
+    const response = await axios.post(`${API_URL}/api/auth/login`, {
+      email,
+      password,
+    });
     const { token, user } = response.data;
     localStorage.setItem("token", token);
     setUser(user);
@@ -70,7 +75,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string,
     password: string
   ) => {
-    const response = await axios.post("/api/auth/register", {
+    const response = await axios.post(`${API_URL}/api/auth/register`, {
       username,
       email,
       password,
@@ -82,7 +87,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 
   const logout = async () => {
     try {
-      await axios.post("/api/auth/logout");
+      await axios.post(`${API_URL}/api/auth/logout`);
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
